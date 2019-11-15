@@ -116,7 +116,7 @@ function drawImage(canvas, network) {
   const downsample = 4
   const scale = 5
   const mag = 128
-  //const mag = 64
+  //const mag = 99
 
   //const rnd2 = Math.random()
   //const t1 = Math.cos(Date.now() / 1000 / 3)
@@ -150,7 +150,9 @@ const activationFunctions = [
   //sum => 2 * Math.atan(2 * sum) / Math.PI,
   //sum => sum > 0 ? 1 : -1,
   sum => Math.sin(sum * 0.75),
+  sum => Math.sin(sum * 0.25),
   sum => 2 * Math.atan(2 * sum) / Math.PI,
+  sum => 4 * Math.atan(sum / 2) / Math.PI,
   //sum => sum / 4,
   //sum => Math.min(Math.max(sum, -1), 1),
 ]
