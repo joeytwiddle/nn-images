@@ -1,0 +1,12 @@
+{
+  "ecmaVersion": 6,
+  "libs": [],
+  "loadEagerly": [
+    "// app.js",
+    "// clientAPIServer.js"
+  ],
+  "plugins": {
+    "doc_comment": {}
+  },
+  "dependencyBudget": 2000
+}
