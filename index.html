@@ -45,8 +45,8 @@ class Network {
         //outputValues[j] = Math.atan(sum) / Math.PI // always -1 to 1
         //outputValues[j] = (1 + Math.atan(sum) / Math.PI) / 2 // always 0 to 1
         //outputValues[j] = 2 * Math.atan(5 * sum) / Math.PI
-        outputValues[j] = 2 * Math.atan(2 * sum) / Math.PI
-        //outputValues[j] = Math.sin(sum * 0.75)
+        //outputValues[j] = 2 * Math.atan(2 * sum) / Math.PI
+        outputValues[j] = Math.sin(sum * 0.75)
       }
     }
   }
@@ -114,10 +114,10 @@ function drawImage(canvas, network) {
   //const mag = 64
 
   //const rnd2 = Math.random()
-  //const rnd1 = Math.cos(Date.now() / 1000 / 3)
-  //const rnd2 = Math.sin(Date.now() / 1000 / 5)
-  const rnd1 = Math.sin(Date.now() / 1000 / 2.3) / 2
-  const rnd2 = Math.sin(Date.now() / 1000 / 3.7) / 2
+  const rnd1 = Math.cos(Date.now() / 1000 / 3)
+  const rnd2 = Math.sin(Date.now() / 1000 / 5)
+  //const rnd1 = Math.sin(Date.now() / 1000 / 2.3) / 2
+  //const rnd2 = Math.sin(Date.now() / 1000 / 3.7) / 2
 
   const ctx = canvas.getContext('2d')
 
@@ -136,7 +136,7 @@ function drawImage(canvas, network) {
 const network = new Network({
   numInputs: 4,
   numOutputs: 3,
-  numLayers: 5,
+  numLayers: 4,
   nodesPerLayer: 9,
 })
 
