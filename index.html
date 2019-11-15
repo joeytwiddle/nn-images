@@ -177,7 +177,14 @@ const activationFunctions = [
   sum => Math.sin(sum * 0.25),
   sum => 2 * Math.atan(2 * sum) / Math.PI,
   sum => 4 * Math.atan(sum / 2) / Math.PI,
-  //sum => sum / 4,
+
+  // I think this is a bit dangerous, but it often produced tiger stripes / ripples, which can be fun
+  //sum => sum,
+  // We can reduce the probability of stripes without having to scale down very much
+  sum => sum * .7,
+
+  //sum => 5 * Math.atan(2 * sum) / Math.PI,
+
   //sum => Math.min(Math.max(sum, -1), 1),
 ]
 
