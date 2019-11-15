@@ -1,7 +1,25 @@
 <html>
-<body>
-<canvas id="canvas" width="512" height="512"></canvas>
-<script>
+  <head>
+    <title>nn-images</title>
+  </head>
+  <body style="font-family: sans-serif">
+    <center>
+      <div>
+        <canvas id="canvas" width="640" height="480"></canvas>
+      </div>
+      <p id="info" style="font-size: 0.7em">
+      </p>
+      <p>
+        <button id="restart-network">Start new network</button>
+      </p>
+      <p>
+        <a href="https://github.com/joeytwiddle/nn-images">GitHub</a>
+      </p>
+      <p style="opacity: 0.5; font-size: 0.7em">
+        By <a href="https://twitter.com/joeytwiddle">@joeytwiddle</a>.  Shouts to <a href="https://twitter.com/purnimakamath">@purnimakamath</a> and <a href="https://twitter.com/KilledByAPixel">Frank Force</a> and <a href="https://www.dwitter.net/">dwitter.net</a>
+      </p>
+    </center>
+  <script>
 
 class Network {
   layers = []
@@ -165,14 +183,28 @@ const options = {
   activationFunctions,
 }
 
-const network = new Network(options)
+let interval
 
-const canvas = document.getElementById('canvas')
+function startNewAnimation() {
+  const canvas = document.getElementById('canvas')
 
-//drawImage(canvas, network)
-setInterval(() => drawImage(canvas, network), 100)
+  const network = new Network(options)
 
-</script>
+  document.getElementById('info').textContent = `This is a ${options.numLayers} layer neural network with ${options.nodesPerLayer} nodes per layer and ${activationFunctions.length} different activation functions`
+
+  if (interval) {
+    clearInterval(interval)
+  }
+
+  drawImage(canvas, network)
+  interval = setInterval(() => drawImage(canvas, network), 100)
+}
+
+startNewAnimation()
+
+document.getElementById('restart-network').addEventListener('click', startNewAnimation)
+
+  </script>
 </body>
 <!-- By joeytwiddle.  Free to use as you wish. -->
 <!-- Thanks to Purnima Kamath for the inspiration.  My apologies for the numerous bugs. -->
