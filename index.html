@@ -134,7 +134,7 @@ let now = Date.now()
 function drawImage(canvas, network) {
   // For faster rendering, sample fewer points
   const downsample = 4
-  const scale = 5
+  const scale = 6
   const mag = 128
   //const mag = 99
 
@@ -173,15 +173,15 @@ const activationFunctions = [
   //sum => 2 * Math.atan(5 * sum) / Math.PI,
   //sum => 2 * Math.atan(2 * sum) / Math.PI,
   //sum => sum > 0 ? 1 : -1,
-  sum => Math.sin(sum * 0.75),
-  sum => Math.sin(sum * 0.25),
+  sum => Math.sin(sum * 0.61),
+  sum => Math.sin(sum * 0.31),
   sum => 2 * Math.atan(2 * sum) / Math.PI,
   sum => 4 * Math.atan(sum / 2) / Math.PI,
 
   // I think this is a bit dangerous, but it often produced tiger stripes / ripples, which can be fun
   //sum => sum,
-  // We can reduce the probability of stripes without having to scale down very much
-  sum => sum * .7,
+  // We can reduce the probability/strength of stripes by scaling down
+  sum => sum * 0.5,
 
   //sum => 5 * Math.atan(2 * sum) / Math.PI,
 
