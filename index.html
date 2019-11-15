@@ -105,9 +105,11 @@ function getOutputForInput(network, input) {
   return network.getOutputValues()
 }
 
-// TODO I guess this should really be stored in the network.
+// We get a lot of effects focused around the origin (currently the center of the canvas) because the inputs t1, t2, x and y can all have value 0
+// But we can avoid (or at least offset) that disturbing effect by introducing a static non-zero input
+// TODO I guess this could be stored in the network.
 //      We could put this into the input layer, we will just need to not clobber it with setInputValues()
-//const rnd1 = Math.random()
+const rnd1 = 0.1 + Math.random() * 0.2
 
 function drawImage(canvas, network) {
   // For faster rendering, sample fewer points
@@ -126,7 +128,7 @@ function drawImage(canvas, network) {
 
   for (let x = 0; x < canvas.width; x += downsample) {
     for (let y = 0; y < canvas.height; y += downsample) {
-      const input = [scale * (x / canvas.width - 0.5), scale * (y / canvas.width - 0.5), rnd1, rnd2]
+      const input = [scale * (x - canvas.width / 2) / canvas.height, scale * (y - canvas.height / 2) / canvas.height, t1, t2, rnd1]
       const result = getOutputForInput(network, input)
       // CONSIDER Might be faster to use pixel buffer, but this is likely not the bottleneck anyway!
       //ctx.fillStyle = `rgb(${result[0] * 255}, ${result[1] * 255}, ${result[2] * 255})`
@@ -151,7 +153,7 @@ const activationFunctions = [
 ]
 
 const options = {
-  numInputs: 4,
+  numInputs: 5,
   numOutputs: 3,
   numLayers: 4,
   nodesPerLayer: 9,
