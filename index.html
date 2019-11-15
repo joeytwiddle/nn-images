@@ -110,6 +110,7 @@ function getOutputForInput(network, input) {
 function drawImage(canvas, network) {
   // For faster rendering, sample fewer points
   const downsample = 4
+  const scale = 5
   const mag = 128
   //const mag = 64
 
@@ -123,7 +124,7 @@ function drawImage(canvas, network) {
 
   for (let x = 0; x < canvas.width; x += downsample) {
     for (let y = 0; y < canvas.height; y += downsample) {
-      const input = [x / canvas.width - 0.5, y / canvas.width - 0.5, rnd1, rnd2]
+      const input = [scale * (x / canvas.width - 0.5), scale * (y / canvas.width - 0.5), rnd1, rnd2]
       const result = getOutputForInput(network, input)
       // CONSIDER Might be faster to use pixel buffer, but this is likely not the bottleneck anyway!
       //ctx.fillStyle = `rgb(${result[0] * 255}, ${result[1] * 255}, ${result[2] * 255})`
