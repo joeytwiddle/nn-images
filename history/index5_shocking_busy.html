@@ -1,0 +1,185 @@
+<html>
+<body>
+  <center>
+    <div>
+      <canvas id="canvas" width="640" height="480"></canvas>
+    </div>
+    <br> <!-- sue me -->
+    <div>
+      <a href="https://github.com/joeytwiddle/nn-images">Github</a>
+    </div>
+  </center>
+<script>
+
+class Network {
+  layers = []
+  weightsLayers = []
+
+  constructor(opts) {
+    this.layers.push(new Layer(opts.numInputs, opts))
+    for (let i = 0; i < opts.numLayers; i++) {
+      this.layers.push(new Layer(opts.nodesPerLayer, opts))
+    }
+    this.layers.push(new Layer(opts.numOutputs, opts))
+
+    for (let i = 0; i < this.layers.length - 1; i++) {
+      this.weightsLayers.push(new WeightsLayer(this.layers[i].numNodes, this.layers[i + 1].numNodes))
+    }
+  }
+
+  setInputValues(values) {
+    this.layers[0].setValues(values)
+  }
+
+  getOutputValues() {
+    return this.layers[this.layers.length - 1].getValues()
+  }
+
+  propagateData() {
+    for (let l = 1; l < this.layers.length; l++) {
+      const previousLayer = this.layers[l - 1]
+      const nextLayer = this.layers[l]
+      const inputValues = previousLayer.getValues()
+      const outputValues = nextLayer.getValues() // must be writable
+      const weightsLayer = this.weightsLayers[l - 1]
+      const activationFunctions = nextLayer.nodeActivationFunctions
+      for (let j = 0; j < nextLayer.numNodes; j++) {
+        let sum = 0
+        for (let i = 0; i < previousLayer.numNodes; i++) {
+          sum += inputValues[i] * weightsLayer.getWeight(i, j)
+        }
+        const activationFunction = activationFunctions[j]
+        outputValues[j] = activationFunction(sum)
+      }
+    }
+  }
+}
+
+class Layer {
+  numNodes = 5
+  nodeActivationFunctions = []
+  nodeValues = []
+
+  constructor(numNodes, opts) {
+    this.numNodes = numNodes
+
+    const { activationFunctions } = opts
+    for (let i = 0; i < numNodes; i++) {
+      const fn = activationFunctions[Math.random() * activationFunctions.length | 0]
+      this.nodeActivationFunctions.push(fn)
+    }
+  }
+
+  setValues(newValues) {
+    if (newValues.length !== this.numNodes) {
+      throw new Error(`newValues.length (${newValues.length}) does not match this.numNodes (${this.numNodes})`)
+    }
+    this.nodeValues = newValues
+  }
+
+  getValues() {
+    return this.nodeValues
+  }
+}
+
+class WeightsLayer {
+  numInputs = 3
+  numOutputs = 3
+  weights = []
+
+  constructor(numInputs, numOutputs) {
+    this.numInputs = numInputs
+    this.numOutputs = numOutputs
+
+    // We could pass this in as an option
+    const generateRandomWeight = () => (2 * Math.random() - 1) * 2
+    //const generateRandomWeight = () => (2 * Math.random() - 1)
+
+    for (let i = 0; i < numInputs; i++) {
+      for (let j = 0; j < numOutputs; j++) {
+        this.weights[j * numInputs + i] = generateRandomWeight()
+      }
+    }
+  }
+
+  getWeight(i, j) {
+    return this.weights[j * this.numInputs + i]
+  }
+}
+
+function getOutputForInput(network, input) {
+  network.setInputValues(input)
+  network.propagateData()
+  return network.getOutputValues()
+}
+
+// We get a lot of effects focused around the origin (currently the center of the canvas) because the inputs t1, t2, x and y can all have value 0
+// But we can avoid (or at least offset) that disturbing effect by introducing a static non-zero input
+// TODO I guess this could be stored in the network.
+//      We could put this into the input layer, we will just need to not clobber it with setInputValues()
+const rnd1 = 0.1 + Math.random() * 0.2
+
+function drawImage(canvas, network) {
+  // For faster rendering, sample fewer points
+  const downsample = 4
+  const scale = 5
+  const mag = 128
+  //const mag = 99
+
+  //const rnd2 = Math.random()
+  //const t1 = Math.cos(Date.now() / 1000 / 3)
+  //const t2 = Math.sin(Date.now() / 1000 / 5)
+  //const t1 = Math.sin(Date.now() / 1000 / 2.3) / 2
+  //const t2 = Math.sin(Date.now() / 1000 / 3.7) / 2
+  // By giving both the same phase we will get constant movement, partially (but not properly) reducing the feeling of swinging from side to side.  We also get repetition quite soon.
+  const t1 = 3 * Math.cos(Date.now() / 1000 / 5)
+  const t2 = 3 * Math.sin(Date.now() / 1000 / 5)
+
+  const ctx = canvas.getContext('2d')
+
+  for (let x = 0; x < canvas.width; x += downsample) {
+    for (let y = 0; y < canvas.height; y += downsample) {
+      const input = [scale * (x - canvas.width / 2) / canvas.height, scale * (y - canvas.height / 2) / canvas.height, t1, t2, rnd1]
+      const result = getOutputForInput(network, input)
+      // CONSIDER Might be faster to use pixel buffer, but this is likely not the bottleneck anyway!
+      //ctx.fillStyle = `rgb(${result[0] * 255}, ${result[1] * 255}, ${result[2] * 255})`
+      ctx.fillStyle = `rgb(${128 + result[0] * mag}, ${128 + result[1] * mag}, ${128 + result[2] * mag})`
+      ctx.fillRect(x, y, downsample, downsample)
+    }
+  }
+}
+
+const activationFunctions = [
+  //sum => Math.min(Math.max(sum, 0), 1), // always 0 to 1
+  //sum => Math.min(Math.max(sum, -1), 1), // always -1 to 1
+  //sum => Math.atan(sum) / Math.PI, // always -1 to 1
+  //sum => (1 + Math.atan(sum) / Math.PI) / 2, // always 0 to 1
+  //sum => 2 * Math.atan(5 * sum) / Math.PI,
+  //sum => 2 * Math.atan(2 * sum) / Math.PI,
+  //sum => sum > 0 ? 1 : -1,
+  sum => Math.sin(sum * 0.75),
+  sum => 2 * Math.atan(2 * sum) / Math.PI,
+  //sum => sum / 4,
+  //sum => Math.min(Math.max(sum, -1), 1),
+]
+
+const options = {
+  numInputs: 5,
+  numOutputs: 3,
+  numLayers: 4,
+  nodesPerLayer: 9,
+  activationFunctions,
+}
+
+const network = new Network(options)
+
+const canvas = document.getElementById('canvas')
+
+//drawImage(canvas, network)
+setInterval(() => drawImage(canvas, network), 100)
+
+</script>
+</body>
+<!-- By joeytwiddle.  Free to use as you wish. -->
+<!-- Thanks to Purnima Kamath for the inspiration.  My apologies for the numerous bugs. -->
+</html>
