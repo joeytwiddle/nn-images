@@ -39,7 +39,7 @@ class Network {
         for (let i = 0; i < previousLayer.numNodes; i++) {
           sum += inputValues[i] * weightsLayer.getWeight(i, j)
         }
-        // Apply sigma function, and store new value
+        // Apply activation function, and store new value
         //outputValues[j] = Math.min(Math.max(sum, 0), 1) // always 0 to 1
         //outputValues[j] = Math.min(Math.max(sum, -1), 1) // always -1 to 1
         //outputValues[j] = Math.atan(sum) / Math.PI // always -1 to 1
