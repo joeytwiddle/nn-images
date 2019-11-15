@@ -44,7 +44,9 @@ class Network {
         //outputValues[j] = Math.min(Math.max(sum, -1), 1) // always -1 to 1
         //outputValues[j] = Math.atan(sum) / Math.PI // always -1 to 1
         //outputValues[j] = (1 + Math.atan(sum) / Math.PI) / 2 // always 0 to 1
-        outputValues[j] = 2 * Math.atan(5 * sum) / Math.PI
+        //outputValues[j] = 2 * Math.atan(5 * sum) / Math.PI
+        outputValues[j] = 2 * Math.atan(2 * sum) / Math.PI
+        //outputValues[j] = Math.sin(sum * 0.75)
       }
     }
   }
@@ -108,10 +110,14 @@ function getOutputForInput(network, input) {
 function drawImage(canvas, network) {
   // For faster rendering, sample fewer points
   const downsample = 4
+  const mag = 128
+  //const mag = 64
 
   //const rnd2 = Math.random()
-  const rnd1 = Math.cos(Date.now() / 1000 / 3)
-  const rnd2 = Math.sin(Date.now() / 1000 / 5)
+  //const rnd1 = Math.cos(Date.now() / 1000 / 3)
+  //const rnd2 = Math.sin(Date.now() / 1000 / 5)
+  const rnd1 = Math.sin(Date.now() / 1000 / 2.3) / 2
+  const rnd2 = Math.sin(Date.now() / 1000 / 3.7) / 2
 
   const ctx = canvas.getContext('2d')
 
@@ -120,7 +126,8 @@ function drawImage(canvas, network) {
       const input = [x / canvas.width - 0.5, y / canvas.width - 0.5, rnd1, rnd2]
       const result = getOutputForInput(network, input)
       // CONSIDER Might be faster to use pixel buffer, but this is likely not the bottleneck anyway!
-      ctx.fillStyle = `rgb(${result[0] * 255}, ${result[1] * 255}, ${result[2] * 255})`
+      //ctx.fillStyle = `rgb(${result[0] * 255}, ${result[1] * 255}, ${result[2] * 255})`
+      ctx.fillStyle = `rgb(${128 + result[0] * mag}, ${128 + result[1] * mag}, ${128 + result[2] * mag})`
       ctx.fillRect(x, y, downsample, downsample)
     }
   }
@@ -129,7 +136,7 @@ function drawImage(canvas, network) {
 const network = new Network({
   numInputs: 4,
   numOutputs: 3,
-  numLayers: 4,
+  numLayers: 5,
   nodesPerLayer: 9,
 })
 
