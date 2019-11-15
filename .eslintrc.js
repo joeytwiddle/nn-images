@@ -1,5 +1,8 @@
 module.exports = {
   parser: 'babel-eslint',
+  plugins: [
+    'eslint-plugin-html',
+  ],
   extends: [
     'eslint:recommended',
   ],
