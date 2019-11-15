@@ -46,7 +46,18 @@ class Network {
         //outputValues[j] = (1 + Math.atan(sum) / Math.PI) / 2 // always 0 to 1
         //outputValues[j] = 2 * Math.atan(5 * sum) / Math.PI
         //outputValues[j] = 2 * Math.atan(2 * sum) / Math.PI
-        outputValues[j] = Math.sin(sum * 0.75)
+        const k = j % 4;
+        if (k === 0) {
+          outputValues[j] = Math.sin(sum * 0.75)
+        } else if (k === 1) {
+          outputValues[j] = 2 * Math.atan(2 * sum) / Math.PI
+        } else if (k === 2) {
+          outputValues[j] = sum / 4
+        //} else if (k === 3) {
+        //  outputValues[j] = sum > 0 ? 1 : -1
+        } else {
+          outputValues[j] = Math.min(Math.max(sum, -1), 1) // always -1 to 1
+        }
       }
     }
   }
