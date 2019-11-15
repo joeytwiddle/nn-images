@@ -129,6 +129,8 @@ function getOutputForInput(network, input) {
 //      We could put this into the input layer, we will just need to not clobber it with setInputValues()
 const rnd1 = 0.1 + Math.random() * 0.2
 
+let now = Date.now()
+
 function drawImage(canvas, network) {
   // For faster rendering, sample fewer points
   const downsample = 4
@@ -136,14 +138,18 @@ function drawImage(canvas, network) {
   const mag = 128
   //const mag = 99
 
+  //now = Date.now()
+  // For machines with slow CPUs, this will slow down the animation
+  now += 100
+
   //const rnd2 = Math.random()
-  //const t1 = Math.cos(Date.now() / 1000 / 3)
-  //const t2 = Math.sin(Date.now() / 1000 / 5)
-  //const t1 = Math.sin(Date.now() / 1000 / 2.3) / 2
-  //const t2 = Math.sin(Date.now() / 1000 / 3.7) / 2
+  //const t1 = Math.cos(now / 1000 / 3)
+  //const t2 = Math.sin(now / 1000 / 5)
+  //const t1 = Math.sin(now / 1000 / 2.3) / 2
+  //const t2 = Math.sin(now / 1000 / 3.7) / 2
   // By giving both the same phase we will get constant movement, partially (but not properly) reducing the feeling of swinging from side to side.  We also get repetition quite soon.
-  const t1 = 3 * Math.cos(Date.now() / 1000 / 5)
-  const t2 = 3 * Math.sin(Date.now() / 1000 / 5)
+  const t1 = 3 * Math.cos(now / 1000 / 5)
+  const t2 = 3 * Math.sin(now / 1000 / 5)
 
   const ctx = canvas.getContext('2d')
 
