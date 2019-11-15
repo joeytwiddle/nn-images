@@ -8,11 +8,11 @@ class Network {
   weightsLayers = []
 
   constructor(opts) {
-    this.layers.push(new Layer(opts.numInputs))
+    this.layers.push(new Layer(opts.numInputs, opts))
     for (let i = 0; i < opts.numLayers; i++) {
-      this.layers.push(new Layer(opts.nodesPerLayer))
+      this.layers.push(new Layer(opts.nodesPerLayer, opts))
     }
-    this.layers.push(new Layer(opts.numOutputs))
+    this.layers.push(new Layer(opts.numOutputs, opts))
 
     for (let i = 0; i < this.layers.length - 1; i++) {
       this.weightsLayers.push(new WeightsLayer(this.layers[i].numNodes, this.layers[i + 1].numNodes))
@@ -34,30 +34,14 @@ class Network {
       const inputValues = previousLayer.getValues()
       const outputValues = nextLayer.getValues() // must be writable
       const weightsLayer = this.weightsLayers[l - 1]
+      const activationFunctions = nextLayer.nodeActivationFunctions
       for (let j = 0; j < nextLayer.numNodes; j++) {
         let sum = 0
         for (let i = 0; i < previousLayer.numNodes; i++) {
           sum += inputValues[i] * weightsLayer.getWeight(i, j)
         }
-        // Apply activation function, and store new value
-        //outputValues[j] = Math.min(Math.max(sum, 0), 1) // always 0 to 1
-        //outputValues[j] = Math.min(Math.max(sum, -1), 1) // always -1 to 1
-        //outputValues[j] = Math.atan(sum) / Math.PI // always -1 to 1
-        //outputValues[j] = (1 + Math.atan(sum) / Math.PI) / 2 // always 0 to 1
-        //outputValues[j] = 2 * Math.atan(5 * sum) / Math.PI
-        //outputValues[j] = 2 * Math.atan(2 * sum) / Math.PI
-        const k = j % 4;
-        if (k === 0) {
-          outputValues[j] = Math.sin(sum * 0.75)
-        } else if (k === 1) {
-          outputValues[j] = 2 * Math.atan(2 * sum) / Math.PI
-        } else if (k === 2) {
-          outputValues[j] = sum / 4
-        //} else if (k === 3) {
-        //  outputValues[j] = sum > 0 ? 1 : -1
-        } else {
-          outputValues[j] = Math.min(Math.max(sum, -1), 1) // always -1 to 1
-        }
+        const activationFunction = activationFunctions[j]
+        outputValues[j] = activationFunction(sum)
       }
     }
   }
@@ -65,10 +49,17 @@ class Network {
 
 class Layer {
   numNodes = 5
+  nodeActivationFunctions = []
   nodeValues = []
 
-  constructor(numNodes) {
+  constructor(numNodes, opts) {
     this.numNodes = numNodes
+
+    const { activationFunctions } = opts
+    for (let i = 0; i < numNodes; i++) {
+      const fn = activationFunctions[Math.random() * activationFunctions.length | 0]
+      this.nodeActivationFunctions.push(fn)
+    }
   }
 
   setValues(newValues) {
@@ -145,12 +136,29 @@ function drawImage(canvas, network) {
   }
 }
 
-const network = new Network({
+const activationFunctions = [
+  //sum => Math.min(Math.max(sum, 0), 1), // always 0 to 1
+  //sum => Math.min(Math.max(sum, -1), 1), // always -1 to 1
+  //sum => Math.atan(sum) / Math.PI, // always -1 to 1
+  //sum => (1 + Math.atan(sum) / Math.PI) / 2, // always 0 to 1
+  //sum => 2 * Math.atan(5 * sum) / Math.PI,
+  //sum => 2 * Math.atan(2 * sum) / Math.PI,
+  //sum => sum > 0 ? 1 : -1,
+  sum => Math.sin(sum * 0.75),
+  sum => 2 * Math.atan(2 * sum) / Math.PI,
+  //sum => sum / 4,
+  //sum => Math.min(Math.max(sum, -1), 1),
+]
+
+const options = {
   numInputs: 4,
   numOutputs: 3,
   numLayers: 4,
   nodesPerLayer: 9,
-})
+  activationFunctions,
+}
+
+const network = new Network(options)
 
 const canvas = document.getElementById('canvas')
 
