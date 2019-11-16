@@ -10,13 +10,16 @@
       <p id="info" style="font-size: 0.7em">
       </p>
       <p>
-        <button id="restart-network">Start new network</button>
+        <button id="restart-network">Generate new network</button>
       </p>
       <p>
-        <a href="https://github.com/joeytwiddle/nn-images">GitHub</a>
+        <a href="https://github.com/joeytwiddle/nn-images">Source code on GitHub</a>
       </p>
-      <p style="opacity: 0.5; font-size: 0.7em">
+      <p style="opacity: 0.7; font-size: 0.7em">
         By <a href="https://twitter.com/joeytwiddle">@joeytwiddle</a>.  Shouts to <a href="https://twitter.com/purnimakamath">@purnimakamath</a> and <a href="https://twitter.com/KilledByAPixel">Frank Force</a> and <a href="https://www.dwitter.net/">dwitter.net</a>
+      </p>
+      <p style="opacity: 0.7; font-size: 0.7em">
+        Play with neural networks at the <a href="http://playground.tensorflow.org/">TensorFlow Playground</a>
       </p>
     </center>
   <script>
@@ -203,7 +206,7 @@ function startNewAnimation() {
 
   const network = new Network(options)
 
-  document.getElementById('info').textContent = `This is a ${options.numLayers} layer neural network with ${options.nodesPerLayer} nodes per layer and ${activationFunctions.length} different activation functions`
+  document.getElementById('info').textContent = `This is a ${options.numLayers} layer neural network with ${options.nodesPerLayer} nodes per layer, using a mixture of ${activationFunctions.length} different activation functions`
 
   if (interval) {
     clearInterval(interval)
