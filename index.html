@@ -24,6 +24,8 @@
     </center>
   <script>
 
+const showNodeRanges = false
+
 class Network {
   layers = []
   weightsLayers = []
@@ -156,6 +158,11 @@ function drawImage(canvas, network) {
 
   const ctx = canvas.getContext('2d')
 
+  let overallHighestNode = -Infinity
+  let overallLowestNode = +Infinity
+  let overallHighestOutput = -Infinity
+  let overallLowestOutput = +Infinity
+
   for (let x = 0; x < canvas.width; x += downsample) {
     for (let y = 0; y < canvas.height; y += downsample) {
       const input = [scale * (x - canvas.width / 2) / canvas.height, scale * (y - canvas.height / 2) / canvas.height, t1, t2, rnd1]
@@ -164,8 +171,34 @@ function drawImage(canvas, network) {
       //ctx.fillStyle = `rgb(${result[0] * 255}, ${result[1] * 255}, ${result[2] * 255})`
       ctx.fillStyle = `rgb(${128 + result[0] * mag}, ${128 + result[1] * mag}, ${128 + result[2] * mag})`
       ctx.fillRect(x, y, downsample, downsample)
+
+      if (showNodeRanges) {
+        //if (Math.random() < 0.00001) console.log(network.layers.map(layer => layer.getValues()))
+        const highest = getHighest(network.layers.map(layer => layer.getValues()).map(getHighest))
+        overallHighestNode = Math.max(overallHighestNode, highest)
+        const lowest = getLowest(network.layers.map(layer => layer.getValues()).map(getLowest))
+        overallLowestNode = Math.min(overallLowestNode, lowest)
+
+        overallHighestOutput = Math.max(overallHighestOutput, getHighest(result))
+        overallLowestOutput = Math.min(overallLowestOutput, getLowest(result))
+      }
     }
   }
+
+  if (showNodeRanges) {
+    document.getElementById('info').textContent = `
+      Lowest node: ${overallLowestNode.toLocaleString()} Highest node: ${overallHighestNode.toLocaleString()}
+      Lowest output: ${overallLowestOutput.toLocaleString()} Highest output: ${overallHighestOutput.toLocaleString()}
+    `
+  }
+}
+
+function getHighest(array) {
+  return Math.max.apply(Math, array)
+}
+
+function getLowest(array) {
+  return Math.min.apply(Math, array)
 }
 
 const activationFunctions = [
