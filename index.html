@@ -5,7 +5,7 @@
   <body style="font-family: sans-serif">
     <center>
       <div>
-        <canvas id="canvas" width="640" height="480"></canvas>
+        <canvas id="canvas" width="580" height="435"></canvas>
       </div>
       <p id="info" style="font-size: 0.7em">
       </p>
@@ -67,13 +67,6 @@ const activationFunctions = [
   //sum => Math.sign(sum) * 4 * (sum / 9) ** 2,
   //sum => Math.sign(sum) * Math.sqrt(Math.abs(sum) / 9),
 ]
-
-if (!Math.sign) {
-  Math.sign = (x) => x > 0 ? 1 : x < 0 ? -1 : 0
-}
-if (!Math.abs) {
-  Math.abs = (x) => Math.sign(x) * x
-}
 
 const options = {
   numInputs: 5,
