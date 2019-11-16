@@ -61,7 +61,19 @@ const activationFunctions = [
 
   // Modulo / sawtooth (warning: acts a bit funny when switching negative to positive)
   //sum => sum % 6,
+
+  // Square and square root
+  //sum => 4 * (sum / 9) ** 2,
+  //sum => Math.sign(sum) * 4 * (sum / 9) ** 2,
+  //sum => Math.sign(sum) * Math.sqrt(Math.abs(sum) / 9),
 ]
+
+if (!Math.sign) {
+  Math.sign = (x) => x > 0 ? 1 : x < 0 ? -1 : 0
+}
+if (!Math.abs) {
+  Math.abs = (x) => Math.sign(x) * x
+}
 
 const options = {
   numInputs: 5,
