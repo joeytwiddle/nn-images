@@ -1,0 +1,152 @@
+<html>
+<body>
+<canvas id="canvas" width="512" height="512"></canvas>
+<script>
+
+class Network {
+  layers = []
+  weightsLayers = []
+
+  constructor(opts) {
+    this.layers.push(new Layer(opts.numInputs))
+    for (let i = 0; i < opts.numLayers; i++) {
+      this.layers.push(new Layer(opts.nodesPerLayer))
+    }
+    this.layers.push(new Layer(opts.numOutputs))
+
+    for (let i = 0; i < this.layers.length - 1; i++) {
+      this.weightsLayers.push(new WeightsLayer(this.layers[i].numNodes, this.layers[i + 1].numNodes))
+    }
+  }
+
+  setInputValues(values) {
+    this.layers[0].setValues(values)
+  }
+
+  getOutputValues() {
+    return this.layers[this.layers.length - 1].getValues()
+  }
+
+  propagateData() {
+    for (let l = 1; l < this.layers.length; l++) {
+      const previousLayer = this.layers[l - 1]
+      const nextLayer = this.layers[l]
+      const inputValues = previousLayer.getValues()
+      const outputValues = nextLayer.getValues() // must be writable
+      const weightsLayer = this.weightsLayers[l - 1]
+      for (let j = 0; j < nextLayer.numNodes; j++) {
+        let sum = 0
+        for (let i = 0; i < previousLayer.numNodes; i++) {
+          sum += inputValues[i] * weightsLayer.getWeight(i, j)
+        }
+        // Apply sigma function, and store new value
+        //outputValues[j] = Math.min(Math.max(sum, 0), 1) // always 0 to 1
+        //outputValues[j] = Math.min(Math.max(sum, -1), 1) // always -1 to 1
+        //outputValues[j] = Math.atan(sum) / Math.PI // always -1 to 1
+        //outputValues[j] = (1 + Math.atan(sum) / Math.PI) / 2 // always 0 to 1
+        //outputValues[j] = 2 * Math.atan(5 * sum) / Math.PI
+        //outputValues[j] = 2 * Math.atan(2 * sum) / Math.PI
+        outputValues[j] = Math.sin(sum)
+      }
+    }
+  }
+}
+
+class Layer {
+  numNodes = 5
+  nodeValues = []
+
+  constructor(numNodes) {
+    this.numNodes = numNodes
+  }
+
+  setValues(newValues) {
+    if (newValues.length !== this.numNodes) {
+      throw new Error(`newValues.length (${newValues.length}) does not match this.numNodes (${this.numNodes})`)
+    }
+    this.nodeValues = newValues
+  }
+
+  getValues() {
+    return this.nodeValues
+  }
+}
+
+class WeightsLayer {
+  numInputs = 3
+  numOutputs = 3
+  weights = []
+
+  constructor(numInputs, numOutputs) {
+    this.numInputs = numInputs
+    this.numOutputs = numOutputs
+
+    // We could pass this in as an option
+    const generateRandomWeight = () => (2 * Math.random() - 1) * 2
+    //const generateRandomWeight = () => (2 * Math.random() - 1)
+
+    for (let i = 0; i < numInputs; i++) {
+      for (let j = 0; j < numOutputs; j++) {
+        this.weights[j * numInputs + i] = generateRandomWeight()
+      }
+    }
+  }
+
+  getWeight(i, j) {
+    return this.weights[j * this.numInputs + i]
+  }
+}
+
+function getOutputForInput(network, input) {
+  network.setInputValues(input)
+  network.propagateData()
+  return network.getOutputValues()
+}
+
+// TODO I guess this should really be stored in the network.
+//      We could put this into the input layer, we will just need to not clobber it with setInputValues()
+//const rnd1 = Math.random()
+
+function drawImage(canvas, network) {
+  // For faster rendering, sample fewer points
+  const downsample = 4
+  const mag = 128
+  //const mag = 64
+
+  //const rnd2 = Math.random()
+  const rnd1 = Math.cos(Date.now() / 1000 / 3)
+  const rnd2 = Math.sin(Date.now() / 1000 / 5)
+  //const rnd1 = Math.sin(Date.now() / 1000 / 2.3) / 2
+  //const rnd2 = Math.sin(Date.now() / 1000 / 3.7) / 2
+
+  const ctx = canvas.getContext('2d')
+
+  for (let x = 0; x < canvas.width; x += downsample) {
+    for (let y = 0; y < canvas.height; y += downsample) {
+      const input = [x / canvas.width - 0.5, y / canvas.width - 0.5, rnd1, rnd2]
+      const result = getOutputForInput(network, input)
+      // CONSIDER Might be faster to use pixel buffer, but this is likely not the bottleneck anyway!
+      //ctx.fillStyle = `rgb(${result[0] * 255}, ${result[1] * 255}, ${result[2] * 255})`
+      ctx.fillStyle = `rgb(${128 + result[0] * mag}, ${128 + result[1] * mag}, ${128 + result[2] * mag})`
+      ctx.fillRect(x, y, downsample, downsample)
+    }
+  }
+}
+
+const network = new Network({
+  numInputs: 4,
+  numOutputs: 3,
+  numLayers: 4,
+  nodesPerLayer: 9,
+})
+
+const canvas = document.getElementById('canvas')
+
+//drawImage(canvas, network)
+setInterval(() => drawImage(canvas, network), 100)
+
+</script>
+</body>
+<!-- By joeytwiddle.  Free to use as you wish. -->
+<!-- Thanks to Purnima Kamath for the inspiration.  My apologies for the numerous bugs. -->
+</html>
