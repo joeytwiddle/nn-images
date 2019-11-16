@@ -5,7 +5,7 @@
   <body style="font-family: sans-serif">
     <center>
       <div>
-        <canvas id="canvas" width="160" height="120" style="width: 640; height: 480"></canvas>
+        <canvas id="canvas" width="640" height="480"></canvas>
       </div>
       <p id="info" style="font-size: 0.7em">
       </p>
@@ -27,6 +27,9 @@
 (function() {
 
 const showNodeRanges = false
+const downsample = 4
+// true = smooth browser interpolation, false = visible square "pixels"
+const stretchCanvas = false
 
 class Network {
   layers = []
@@ -140,10 +143,10 @@ let now = Date.now()
 
 function drawImage(canvas, network) {
   // For faster rendering, sample fewer points
-  const downsample = 1
   const scale = 8
   const mag = 128
   //const mag = 99
+  const skip = stretchCanvas ? 1 : downsample
 
   //now = Date.now()
   // For machines with slow CPUs, this will slow down the animation
@@ -165,15 +168,15 @@ function drawImage(canvas, network) {
   let overallHighestOutput = -Infinity
   let overallLowestOutput = +Infinity
 
-  for (let x = 0; x < canvas.width; x += downsample) {
-    for (let y = 0; y < canvas.height; y += downsample) {
+  for (let x = 0; x < canvas.width; x += skip) {
+    for (let y = 0; y < canvas.height; y += skip) {
       const input = [scale * (x - canvas.width / 2) / canvas.height, scale * (y - canvas.height / 2) / canvas.height, t1, t2, rnd1]
       const result = getOutputForInput(network, input)
       // CONSIDER Might be faster to use pixel buffer, but this is likely not the bottleneck anyway!
       //ctx.fillStyle = `rgb(${result[0] * 255}, ${result[1] * 255}, ${result[2] * 255})`
       ctx.fillStyle = `rgb(${128 + result[0] * mag}, ${128 + result[1] * mag}, ${128 + result[2] * mag})`
       //ctx.fillStyle = `hsl(${180 + result[0] * mag * 180 / 200}, ${50 + result[1] * mag * 50 / 300}%, ${50 + result[2] * mag * 50 / 300}%)`
-      ctx.fillRect(x, y, downsample, downsample)
+      ctx.fillRect(x, y, skip, skip)
 
       if (showNodeRanges) {
         //if (Math.random() < 0.00001) console.log(network.layers.map(layer => layer.getValues()))
@@ -250,6 +253,14 @@ function startNewAnimation() {
 
   drawImage(canvas, network)
   interval = setInterval(() => drawImage(canvas, network), 100)
+}
+
+if (stretchCanvas) {
+  const canvas = document.getElementById('canvas')
+  canvas.style.width = canvas.width + 'px'
+  canvas.style.height = canvas.height + 'px'
+  canvas.width /= downsample
+  canvas.height /= downsample
 }
 
 startNewAnimation()
