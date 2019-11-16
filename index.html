@@ -5,7 +5,7 @@
   <body style="font-family: sans-serif">
     <center>
       <div>
-        <canvas id="canvas" width="640" height="480"></canvas>
+        <canvas id="canvas" width="160" height="120" style="width: 640; height: 480"></canvas>
       </div>
       <p id="info" style="font-size: 0.7em">
       </p>
@@ -140,7 +140,7 @@ let now = Date.now()
 
 function drawImage(canvas, network) {
   // For faster rendering, sample fewer points
-  const downsample = 4
+  const downsample = 1
   const scale = 8
   const mag = 128
   //const mag = 99
