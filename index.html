@@ -31,6 +31,37 @@ const downsample = 4
 // true = smooth browser interpolation, false = visible square "pixels"
 const stretchCanvas = false
 
+const activationFunctions = [
+  //sum => Math.min(Math.max(sum, 0), 1), // always 0 to 1
+  //sum => Math.min(Math.max(sum, -1), 1), // always -1 to 1
+  //sum => Math.atan(sum) / Math.PI, // always -1 to 1
+  //sum => (1 + Math.atan(sum) / Math.PI) / 2, // always 0 to 1
+  //sum => 2 * Math.atan(5 * sum) / Math.PI,
+  //sum => 2 * Math.atan(2 * sum) / Math.PI,
+  //sum => sum > 0 ? 1 : -1,
+  sum => Math.sin(sum * 0.61),
+  sum => Math.sin(sum * 0.31),
+  sum => 2 * Math.atan(2 * sum) / Math.PI,
+  sum => 4 * Math.atan(sum / 2) / Math.PI,
+
+  // I think this is a bit dangerous, but it often produced tiger stripes / ripples, which can be fun
+  //sum => sum,
+  // We can reduce the probability/strength of stripes by scaling down
+  sum => sum * 0.5,
+
+  //sum => 5 * Math.atan(2 * sum) / Math.PI,
+
+  //sum => Math.min(Math.max(sum, -1), 1),
+]
+
+const options = {
+  numInputs: 5,
+  numOutputs: 3,
+  numLayers: 4,
+  nodesPerLayer: 9,
+  activationFunctions,
+}
+
 class Network {
   layers = []
   weightsLayers = []
@@ -205,37 +236,6 @@ function getHighest(array) {
 
 function getLowest(array) {
   return Math.min.apply(Math, array)
-}
-
-const activationFunctions = [
-  //sum => Math.min(Math.max(sum, 0), 1), // always 0 to 1
-  //sum => Math.min(Math.max(sum, -1), 1), // always -1 to 1
-  //sum => Math.atan(sum) / Math.PI, // always -1 to 1
-  //sum => (1 + Math.atan(sum) / Math.PI) / 2, // always 0 to 1
-  //sum => 2 * Math.atan(5 * sum) / Math.PI,
-  //sum => 2 * Math.atan(2 * sum) / Math.PI,
-  //sum => sum > 0 ? 1 : -1,
-  sum => Math.sin(sum * 0.61),
-  sum => Math.sin(sum * 0.31),
-  sum => 2 * Math.atan(2 * sum) / Math.PI,
-  sum => 4 * Math.atan(sum / 2) / Math.PI,
-
-  // I think this is a bit dangerous, but it often produced tiger stripes / ripples, which can be fun
-  //sum => sum,
-  // We can reduce the probability/strength of stripes by scaling down
-  sum => sum * 0.5,
-
-  //sum => 5 * Math.atan(2 * sum) / Math.PI,
-
-  //sum => Math.min(Math.max(sum, -1), 1),
-]
-
-const options = {
-  numInputs: 5,
-  numOutputs: 3,
-  numLayers: 4,
-  nodesPerLayer: 9,
-  activationFunctions,
 }
 
 let interval
