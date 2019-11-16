@@ -38,7 +38,10 @@ const activationFunctions = [
   //sum => (1 + Math.atan(sum) / Math.PI) / 2, // always 0 to 1
   //sum => 2 * Math.atan(5 * sum) / Math.PI,
   //sum => 2 * Math.atan(2 * sum) / Math.PI,
+
+  // Sharp split
   //sum => sum > 0 ? 1 : -1,
+
   sum => Math.sin(sum * 0.61),
   sum => Math.sin(sum * 0.31),
   sum => 2 * Math.atan(2 * sum) / Math.PI,
@@ -52,6 +55,12 @@ const activationFunctions = [
   //sum => 5 * Math.atan(2 * sum) / Math.PI,
 
   //sum => Math.min(Math.max(sum, -1), 1),
+
+  // Staircase / terrace / stratify
+  //sum => Math.round(sum / 6) * 6,
+
+  // Modulo / sawtooth (warning: acts a bit funny when switching negative to positive)
+  //sum => sum % 6,
 ]
 
 const options = {
