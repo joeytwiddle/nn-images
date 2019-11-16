@@ -31,6 +31,7 @@ const showNodeRanges = false
 const downsample = 4
 // true = smooth browser interpolation, false = visible square "pixels"
 const stretchCanvas = false
+const addRadialInput = false
 
 const activationFunctions = [
   //sum => Math.min(Math.max(sum, 0), 1), // always 0 to 1
@@ -70,7 +71,7 @@ const activationFunctions = [
 ]
 
 const options = {
-  numInputs: 5,
+  numInputs: 5 + addRadialInput,
   numOutputs: 3,
   numLayers: 6,
   nodesPerLayer: 7,
@@ -218,9 +219,11 @@ function drawImage(canvas, network) {
     for (let y = 0; y < canvas.height; y += skip) {
       const spacex = scale * (x - canvas.width / 2) / canvas.height
       const spacey = scale * (y - canvas.height / 2) / canvas.height
-      //const hypot = Math.hypot(spacex, spacey)
-      //const input = [spacex, spacey, t1, t2, rnd1, hypot]
       const input = [spacex, spacey, t1, t2, rnd1]
+      if (addRadialInput) {
+        const hypot = Math.hypot(spacex, spacey)
+        input.push(hypot)
+      }
       const result = getOutputForInput(network, input)
       // CONSIDER Might be faster to use pixel buffer, but this is likely not the bottleneck anyway!
       //ctx.fillStyle = `rgb(${result[0] * 255}, ${result[1] * 255}, ${result[2] * 255})`
