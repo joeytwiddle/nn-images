@@ -71,7 +71,7 @@ const activationFunctions = [
 ]
 
 const options = {
-  numInputs: 5 + addRadialInput,
+  numInputs: 7 + addRadialInput,
   numOutputs: 3,
   numLayers: 6,
   nodesPerLayer: 7,
@@ -207,6 +207,8 @@ function drawImage(canvas, network) {
   // By giving both the same phase we will get constant movement, partially (but not properly) reducing the feeling of swinging from side to side.  We also get repetition quite soon.
   const t1 = 3 * Math.cos(now / 1000 / 3)
   const t2 = 3 * Math.sin(now / 1000 / 3)
+  const t3 = 3 * Math.sin(now / 1000 / 4.21)
+  const t4 = 3 * Math.sin(now / 1000 / 5.17)
 
   const ctx = canvas.getContext('2d')
 
@@ -219,7 +221,7 @@ function drawImage(canvas, network) {
     for (let y = 0; y < canvas.height; y += skip) {
       const spacex = scale * (x - canvas.width / 2) / canvas.height
       const spacey = scale * (y - canvas.height / 2) / canvas.height
-      const input = [spacex, spacey, t1, t2, rnd1]
+      const input = [spacex, spacey, t1, t2, t3, t4, rnd1]
       if (addRadialInput) {
         const hypot = Math.hypot(spacex, spacey)
         input.push(hypot)
