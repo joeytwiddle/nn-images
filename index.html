@@ -46,12 +46,17 @@ const activationFunctions = [
 
   sum => Math.sin(sum * 0.61),
   sum => Math.sin(sum * 0.31),
-  sum => 2 * Math.atan(2 * sum) / Math.PI,
-  sum => 4 * Math.atan(sum / 2) / Math.PI,
 
-  // I think this is a bit dangerous, but it often produced tiger stripes / ripples, which can be fun
+  //sum => Math.cos(sum * 0.61),
+  //sum => Math.cos(sum * 0.31),
+
+  //sum => 2 * Math.atan(2 * sum) / Math.PI,
+  //sum => 4 * Math.atan(sum / 2) / Math.PI,
+
+  // This often produces tiger stripes / ripples (when fed into a sine in the next layer), which can be fun
+  // But their frequency is too high
   //sum => sum,
-  // We can reduce the probability/strength of stripes by scaling down
+  // We can reduce the probability/frequency of stripes by scaling down
   sum => sum * 0.5,
 
   //sum => 5 * Math.atan(2 * sum) / Math.PI,
@@ -73,8 +78,8 @@ const activationFunctions = [
 const options = {
   numInputs: 7 + addRadialInput,
   numOutputs: 3,
-  numLayers: 6,
-  nodesPerLayer: 7,
+  numLayers: 7,
+  nodesPerLayer: 6,
   activationFunctions,
 }
 
