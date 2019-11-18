@@ -192,7 +192,9 @@ function getOutputForInput(network, input) {
 // But we can avoid (or at least offset) that disturbing artifact by introducing a static non-zero input
 // TODO I guess this could be stored in the network.
 //      We could put this into the input layer, we will just need to not clobber it with setInputValues()
-const rnd1 = 0.1 + Math.random() * 0.2
+//const rnd1 = 0.1 + Math.random() * 0.2
+// Actually we don't need to randomize this, since the weights will do that anyway
+const rnd1 = 0.2
 
 let now = Date.now()
 
