@@ -28,10 +28,14 @@
     </center>
   <script>
 
+// :syn sync fromstart
+
 (function() {
 
 const showNodeRanges = false
-const downsample = 4
+//const.downsample = 4
+// By making this a global, the user can change it at runtime, e.g. if they want to create a high-resolution recording
+window.downsample = 4
 // true = smooth browser interpolation, false = visible square "pixels"
 const stretchCanvas = false
 const addRadialInput = false
@@ -231,6 +235,9 @@ function drawImage(canvas, network) {
     for (let y = 0; y < canvas.height; y += skip) {
       const spacex = scale * (x - canvas.width / 2) / canvas.height
       const spacey = scale * (y - canvas.height / 2) / canvas.height
+      // NOTE: If you change the number of inputs, you must also change options.numInputs
+      //const input = [spacex, spacey, t1, t2, rnd1]
+      // Reduce repetition (longer cycle)
       const input = [spacex, spacey, t1, t2, t3, t4, rnd1]
       if (addRadialInput) {
         const hypot = Math.hypot(spacex, spacey)
